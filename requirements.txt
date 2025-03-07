@@ -1,0 +1,6 @@
+import pandas as pd            # Untuk manipulasi data dan operasi dataframe
+import numpy as np             # Untuk operasi numerik dan array
+import seaborn as sns          # Untuk visualisasi data (seperti heatmap, boxplot, dll)
+import matplotlib.pyplot as plt # Untuk plotting dan visualisasi data
+from sklearn.model_selection import train_test_split  # Untuk membagi data menjadi set pelatihan dan pengujian
+from sklearn.ensemble import RandomForestClassifier    # Untuk model klasifikasi (jika diperlukan)
