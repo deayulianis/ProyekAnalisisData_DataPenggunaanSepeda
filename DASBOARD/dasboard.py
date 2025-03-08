@@ -45,9 +45,10 @@ st.pyplot(fig)
 # ---kesimpulan---
 st.subheader("Kesimpulan")
 st.write("""
-Visualisasi menunjukkan bahwa penggunaan sepeda meningkat signifikan pada jam pagi (07:00 - 09:00) dan sore 
-(17:00 - 19:00), yang kemungkinan besar berkaitan dengan jam berangkat dan pulang kerja/sekolah. Sementara itu, 
-penggunaan sepeda paling rendah terjadi pada dini hari (00:00 - 05:00).
+Dari visualisasi, terlihat bahwa:
+- **Jumlah peminjaman sepeda tertinggi** terjadi pada musim gugur (**Fall**), diikuti oleh musim panas (**Summer**).
+- **Peminjaman sepeda paling rendah** terjadi pada musim semi (**Spring**) dan musim dingin (**Winter**).
+- Hal ini kemungkinan karena kondisi cuaca yang kurang mendukung, seperti hujan atau suhu dingin yang ekstrem.
 """)
 
 # --- Visualisasi 2: Pengaruh Musim terhadap Penggunaan Sepeda ---
