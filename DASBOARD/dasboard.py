@@ -1,70 +1,80 @@
 import streamlit as st
 import pandas as pd
-import seaborn as sns
 import matplotlib.pyplot as plt
+import seaborn as sns
 
-# --- Data Loading ---
-@st.cache
+# Load data dari GitHub
+URL = "https://raw.githubusercontent.com/DcCode46/submission/main/dashboard/all_data.csv"
+@st.cache_data
 def load_data():
-    # Menggunakan path yang sudah Anda tentukan untuk file CSV
-    hour_df = pd.read_csv(r"https://raw.githubusercontent.com/deayulianis/submission-DBS-1-/refs/heads/main/Bike-sharing-dataset/hour.csv")
-    day_df = pd.read_csv(r"https://raw.githubusercontent.com/deayulianis/submission-DBS-1-/refs/heads/main/Bike-sharing-dataset/day.csv")
-    return hour_df, day_df
+    return pd.read_csv(URL)
 
-# --- Data Preparation ---
-hour_df, day_df = load_data()
+df = load_data()
 
-# --- Data Cleaning & Transformation ---
-# Mengubah nilai 'season' dan 'weathersit' menjadi nama musim dan cuaca yang lebih mudah dipahami
-hour_df['season'] = hour_df['season'].replace({1: 'Spring', 2: 'Summer', 3: 'Fall', 4: 'Winter'})
-hour_df['weathersit'] = hour_df['weathersit'].replace({1: 'Clear', 2: 'Cloudy', 3: 'Rainy', 4: 'Stormy'})
+# Cek daftar kolom
+st.write("Kolom dalam dataset:", df.columns)
 
-# --- Display Raw Data ---
-st.title("Bike Sharing Dashboard")
+# Tampilkan beberapa data awal untuk memastikan data ter-load
+st.write("Data awal:", df.head())
 
-st.write("### Hour Data Sample:")
-st.write(hour_df.head())
+# Title
+st.title("Dashboard Analisis Penggunaan Sepeda 🚴")
 
-# --- Exploratory Data Analysis (EDA) ---
+# --- Visualisasi 1: Pola Penggunaan Sepeda Sepanjang Hari ---
+st.subheader("Pola Penggunaan Sepeda Sepanjang Hari")
+hourly_trend = df.groupby('hr').agg({
+    'casual': 'mean',
+    'registered': 'mean',
+    'cnt': 'mean'
+}).reset_index()
 
-# 1. Pola penggunaan sepeda berdasarkan musim dan cuaca
-st.write("### Pola Penggunaan Sepeda Berdasarkan Musim dan Cuaca")
+# Membuat plot
+fig, ax = plt.subplots(figsize=(12, 6))
+sns.lineplot(x='hr', y='casual', data=hourly_trend, label='Casual', marker='o', ax=ax)
+sns.lineplot(x='hr', y='registered', data=hourly_trend, label='Registered', marker='o', ax=ax)
+sns.lineplot(x='hr', y='cnt', data=hourly_trend, label='Total', marker='o', ax=ax)
 
-fig, ax = plt.subplots(figsize=(10, 6))
-sns.countplot(x='season', hue='weathersit', data=hour_df, palette='Set1', ax=ax)
-ax.set_title('Penggunaan Sepeda Berdasarkan Musim dan Cuaca')
+# Menambahkan judul dan label
+ax.set_title('Pola Penggunaan Sepeda Sepanjang Hari', fontsize=14)
+ax.set_xlabel('Jam dalam Sehari', fontsize=12)
+ax.set_ylabel('Jumlah Pengguna', fontsize=12)
+ax.set_xticks(range(0, 24))  # Menampilkan semua jam (0-23)
+ax.legend()
+ax.grid(True, linestyle='--', alpha=0.5)
+
+# Menampilkan plot di Streamlit
 st.pyplot(fig)
 
-# 2. Pola penggunaan sepeda berdasarkan jam dan cuaca
-st.write("### Pola Penggunaan Sepeda Berdasarkan Jam dan Cuaca")
+# --- Visualisasi 2: Pengaruh Musim terhadap Penggunaan Sepeda ---
+st.subheader("Pengaruh Musim terhadap Penggunaan Sepeda")
+season_trend = df.groupby('season').agg({
+    'casual': 'mean',
+    'registered': 'mean',
+    'cnt': 'mean'
+}).reset_index()
 
-fig2, ax2 = plt.subplots(figsize=(10, 6))
-sns.countplot(x='hr', hue='weathersit', data=hour_df, palette='Set2', ax=ax2)
-ax2.set_title('Penggunaan Sepeda Berdasarkan Jam dan Cuaca')
-st.pyplot(fig2)
+# Mapping label musim
+season_labels = {1: 'Spring', 2: 'Summer', 3: 'Fall', 4: 'Winter'}
+season_trend['season'] = season_trend['season'].map(season_labels)
 
-# --- Insights ---
-st.write("### Insight dari Data:")
+# Membuat plot
+fig, ax = plt.subplots(figsize=(10, 6))
+sns.barplot(x='season', y='cnt', data=season_trend, palette='coolwarm', ax=ax)
+
+# Menambahkan label dan judul
+ax.set_title('Pengaruh Musim terhadap Jumlah Peminjaman Sepeda', fontsize=14)
+ax.set_xlabel('Musim', fontsize=12)
+ax.set_ylabel('Rata-rata Jumlah Peminjaman', fontsize=12)
+ax.grid(axis='y', linestyle='--', alpha=0.5)
+
+# Menampilkan plot di Streamlit
+st.pyplot(fig)
+
+# --- Kesimpulan ---
+st.subheader("Kesimpulan")
 st.write("""
-1. **Pola Penggunaan Sepeda Berdasarkan Musim dan Cuaca**: 
-   - Penggunaan sepeda lebih tinggi di musim panas dan musim gugur (Summer & Fall).
-   - Cuaca cerah lebih sering dikaitkan dengan penggunaan sepeda yang lebih tinggi dibandingkan dengan cuaca mendung atau hujan.
-   
-2. **Pola Penggunaan Sepeda Berdasarkan Jam dan Cuaca**:
-   - Penggunaan sepeda lebih tinggi pada jam-jam sibuk, seperti jam 7-9 pagi dan 5-7 sore.
-   - Cuaca cerah cenderung meningkatkan penggunaan sepeda pada jam-jam sibuk.
+Dari visualisasi, terlihat bahwa:
+- **Jumlah peminjaman sepeda tertinggi** terjadi pada musim gugur (**Fall**), diikuti oleh musim panas (**Summer**).
+- **Peminjaman sepeda paling rendah** terjadi pada musim semi (**Spring**) dan musim dingin (**Winter**).
+- Hal ini kemungkinan karena kondisi cuaca yang kurang mendukung, seperti hujan atau suhu dingin yang ekstrem.
 """)
-
-# --- Maximizing Bike Availability During Peak Times ---
-st.write("### Memaksimalkan Jumlah Sepeda yang Tersedia pada Waktu-Waktu Sibuk")
-
-# Data analisis untuk waktu sibuk berdasarkan jam
-hourly_usage = hour_df.groupby('hr').agg({'cnt': 'sum'}).reset_index()
-
-fig3, ax3 = plt.subplots(figsize=(10, 6))
-sns.lineplot(x='hr', y='cnt', data=hourly_usage, marker='o', ax=ax3)
-ax3.set_title('Jumlah Sepeda yang Tersedia Berdasarkan Jam')
-st.pyplot(fig3)
-
-# --- Displaying Dashboard Complete ---
-st.write("### Dashboard Lengkap Selesai.")
