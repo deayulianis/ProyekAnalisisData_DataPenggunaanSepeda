@@ -42,6 +42,14 @@ ax.grid(True, linestyle='--', alpha=0.5)
 # Menampilkan plot di Streamlit
 st.pyplot(fig)
 
+# ---kesimpulan---
+st.subheader("Kesimpulan")
+st.write("""
+Visualisasi menunjukkan bahwa penggunaan sepeda meningkat signifikan pada jam pagi (07:00 - 09:00) dan sore 
+(17:00 - 19:00), yang kemungkinan besar berkaitan dengan jam berangkat dan pulang kerja/sekolah. Sementara itu, 
+penggunaan sepeda paling rendah terjadi pada dini hari (00:00 - 05:00).
+""")
+
 # --- Visualisasi 2: Pengaruh Musim terhadap Penggunaan Sepeda ---
 st.subheader("Pengaruh Musim terhadap Penggunaan Sepeda")
 season_trend = df.groupby('season').agg({
