@@ -11,9 +11,6 @@ def load_data():
 
 df = load_data()
 
-# Cek daftar kolom
-st.write("Kolom dalam dataset:", df.columns)
-
 # Tampilkan beberapa data awal untuk memastikan data ter-load
 st.write("Data awal:", df.head())
 
