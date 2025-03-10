@@ -8,5 +8,5 @@ pip install seaborn
 
 ## Run steamlit app
 ```
-streamlit run dasboard.py
+streamlit run dashboard.py
 ```
