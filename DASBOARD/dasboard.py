@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load data dari GitHub
-URL = "https://raw.githubusercontent.com/deayulianis/submission-DBS-1-/refs/heads/main/DASBOARD/main_data.csv"
+URL = "https://raw.githubusercontent.com/DcCode46/submission/refs/heads/main/dashboard/all_data.csv"
 @st.cache_data
 def load_data():
     return pd.read_csv(URL)
