@@ -23,11 +23,12 @@ st.dataframe(day_df.head())
 st.write("### Data Per Jam (hour.csv)")
 st.dataframe(hour_df.head())
 
-# ========================== POLA PENGGUNAAN SEPEDA SEPANJANG HARI ==========================
-st.subheader("📅 Pola Penggunaan Sepeda Sepanjang Hari")
+# ========================== INTERAKTIF: FILTER RENTANG WAKTU ==========================
+st.subheader("⏳ Analisis Pola Peminjaman Berdasarkan Jam")
+selected_hours = st.slider("Pilih Rentang Jam", 0, 23, (6, 18))
 
-# Data agregat peminjaman sepeda per jam
-hourly_trend = hour_df.groupby('hr').agg({'casual': 'mean', 'registered': 'mean', 'cnt': 'mean'}).reset_index()
+filtered_hourly = hour_df[(hour_df['hr'] >= selected_hours[0]) & (hour_df['hr'] <= selected_hours[1])]
+hourly_trend = filtered_hourly.groupby('hr').agg({'casual': 'mean', 'registered': 'mean', 'cnt': 'mean'}).reset_index()
 
 fig, ax = plt.subplots(figsize=(10, 5))
 sns.lineplot(x='hr', y='casual', data=hourly_trend, label='Casual', marker='o')
@@ -50,20 +51,26 @@ st.markdown(
     """
 )
 
-# ========================== PENGARUH MUSIM TERHADAP PEMINJAMAN ==========================
+# ========================== INTERAKTIF: MUSIM ==========================
 st.subheader("🌦️ Pengaruh Musim terhadap Peminjaman Sepeda")
 
-# Mapping season labels
 season_labels = {1: "Spring", 2: "Summer", 3: "Fall", 4: "Winter"}
 day_df['season_label'] = day_df['season'].map(season_labels)
 
+selected_seasons = {}
+for season in season_labels.values():
+    selected_seasons[season] = st.checkbox(f"Tampilkan {season}", value=True)
+
+filtered_season = day_df[day_df['season_label'].isin([s for s, v in selected_seasons.items() if v])]
+
 fig, ax = plt.subplots(figsize=(8, 5))
-sns.barplot(x='season_label', y='cnt', data=day_df, palette="coolwarm", estimator=lambda x: sum(x) / len(x))
+sns.barplot(x='season_label', y='cnt', data=filtered_season, palette="coolwarm", estimator=lambda x: sum(x) / len(x))
 ax.set_title("Pengaruh Musim terhadap Jumlah Peminjaman Sepeda")
 ax.set_xlabel("Musim")
 ax.set_ylabel("Rata-rata Jumlah Peminjaman")
 ax.grid(axis='y', linestyle='--', alpha=0.5)
 st.pyplot(fig)
+
 
 # Kesimpulan dari visualisasi
 st.markdown(
